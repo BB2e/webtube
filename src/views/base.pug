@@ -1,0 +1,10 @@
+doctype html
+html(lang="ko")
+    head
+        title #{pageTitle} | Webtube
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        block content
+        input(placeholder="What's your name? ")
+        button send
+        include partials/footer.pug
