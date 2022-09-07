@@ -1,0 +1,11 @@
+//-  이름(받아오는 데이터)
+mixin video(video)
+    //- 원하는 구조 짜기
+    div
+        h4
+            a(href=`/videos/${video.id}`)=video.title
+        ul 
+            li #{video.rating} / 5.
+            li #{video.comments} comments.
+            li Posted #{video.createdAt}.
+            li #{video.views} views.

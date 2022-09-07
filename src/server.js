@@ -17,6 +17,9 @@ app.set("views", process.cwd() + "/src/views")
 // 현재 pug가 있는 views 폴더를 알려준다
 app.use(logger)
 
+// HTML form을 이해할수있게 JS obj로 변환해주는 middleware 설정
+app.use(express.urlencoded({extended:true}))
+
 app.use("/", globalRouter)
 app.use("/videos", videoRouter)
 app.use("/users", userRouter)
