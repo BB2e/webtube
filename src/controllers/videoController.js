@@ -2,41 +2,42 @@ import Video from '../models/Video'
 
 // res.render.(pug 템플릿 파일명, 보낼 변수들)
 
-export const home = (req, res) => {
-    Video.find({}, (error, videos) => {
-        // callback이라 db연결이 된후에 아랫줄이 실행된다
-        res.render("home", {
-            pageTitle: "Home",
-            videos
-        })
-    }) // {} : search term 비어있으면 모든 타입을 찾는다 
-
+export const home = async(req, res) => {
+    const videos = await Video.find({});
+    return res.render('home', {pageTitle: "Home", videos})
 }
 
 // => fakeUser: fakeUser
-export const watch = (req, res) => {
+export const watch = async (req, res) => {
     // const id = req.params.id;
-    const {
-        id
-    } = req.params;
+    const { id } = req.params;
+    const video = await Video.findById(id).exec();
+    if(!video) {
+        return res.render("404", {
+            pageTitle: 'Video not found.'
+        });
+    }
     return res.render("watch", {
-        pageTitle: `Watching`
+        pageTitle: video.title, video
     })
+   
 }
 
-export const getEdit = (req, res) => {
-    const {
-        id
-    } = req.params;
+export const getEdit = async (req, res) => {
+    const { id } = req.params;
+    const video = await Video.findById(id).exec();
+    if(!video) {
+        return res.render("404", {
+            pageTitle: 'Video not found.'
+        });
+    }
     return res.render("edit", {
-        pageTitle: `Editing:`
+        pageTitle: `Editing: ${video.title}`, video
     })
 }
 
 export const postEdit = (req, res) => {
-    const {
-        id
-    } = req.params;
+    const { id } = req.params;
     return res.redirect(`/videos/${id}`);
 }
 
@@ -46,11 +47,40 @@ export const getUpload = (req, res) => {
     });
 }
 
-export const postUpload = (req, res) => {
-    let {
-        title
-    } = req.body
-    return res.redirect("/");
+export const postUpload = async (req, res) => {
+    let { title, description, hashtags } = req.body
+    try {
+        await Video.create({
+            title,
+            description,
+            // createdAt: Date.now(), 
+            //Video.js에서 default로 설정됨
+            hashtags: hashtags.split(',').map(word=> `#${word}`),
+            meta: {
+                views: 0,
+                rating: 0
+            },
+        })
+        return res.redirect("/")
+    } catch (error) {
+        return res.render("upload", {
+            pageTitle: "Upload video",
+            errorMessage: error._message
+        })
+    }
+   
+    // let { title, description, hashtags } = req.body
+    // await Video.create({
+    //     title,
+    //     description,
+    //     createdAt: Date.now(),
+    //     hashtags: hashtags.split(',').map(word=> `#${word}`),
+    //     meta: {
+    //         views: 0,
+    //         rating: 0
+    //     },
+    // })
+    // return res.redirect("/");
 }
 
 export const search = (req, res) => res.send("search")

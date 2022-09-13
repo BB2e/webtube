@@ -3,7 +3,6 @@ include mixins/video
 //- mixin 파일을 불러옴
 
 block content
-    h2 Welcome here you will see the trending videos!
     each potato in videos
         +video(potato)
         //- +mixin이름 적고 (보낼 객체) 적기
